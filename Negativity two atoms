@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+beta = 1/T
+T = np.linspace(0.01, 25, 3500)
+
+
+def funcpartition(beta, lambd, omega=1):
+    Z = 2*(np.cosh(beta*omega) + np.cosh(beta*lambd/2))
+    
+    return Z
+
+# Função para calcular os autovalores x1 e x2
+def autovalores(beta, lambd, omega=1):
+    Z = funcpartition(beta, lambd, omega=1)
+    # Calcular x1 e x2
+    x1 = (np.cosh(beta * omega) - 0.5 * np.sqrt(4 * np.cosh(beta * omega)**2 - 4*(1-(np.sinh(beta * lambd / 2))**2))) / Z
+    x2 = (np.cosh(beta * omega) + 0.5 * np.sqrt(4 * np.cosh(beta * omega)**2 - 4*(1-(np.sinh(beta * lambd / 2))**2))) / Z
+    x3 = np.cosh(beta*lambd/2)/Z
+    
+    return x1, x2, x3
+
+# Função para calcular a negatividade
+def negatividade(beta, lambd, omega=1):
+    # Calcular os autovalores x1 e x2
+    x1, x2, x3 = autovalores(beta, lambd, omega)
+    
+    # Negatividade
+    N = (abs(x1) + abs(x2) + 2*abs(x3) - (x1+x2+x3+x3))/2
+    return N
+
+# Definir os intervalos para lambda e beta
+lambdas = np.linspace(-10, 10, 3500)  # Intervalo de lambda com valores negativos
+
+# Criar a grade de pontos para lambda e beta
+L, B = np.meshgrid(lambdas, T)
+
+# Calcular a negatividade para cada ponto na grade
+
+# Plotar o gráfico de contorno
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(B, L, negatividade(B, L), 20, cmap='hot')
+plt.colorbar(cp, label='Negatividade')
+plt.title("Negatividade $N(\\hat{\\rho})$ em função de $T$ e $\\lambda$")
+plt.xlabel("$T$")
+plt.ylabel("$\\lambda$")
+plt.show()
