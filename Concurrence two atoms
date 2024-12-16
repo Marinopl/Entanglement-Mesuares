@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Definir o vetor de temperaturas T e os valores de omega
+T = np.linspace(0.01, 1.5, 3500)  # Temperaturas
+omega_values = np.linspace(-2, 2, 3500)  # Valores de omega (frequência)
+
+# Definir a função para calcular a concorrência
+def concurrence(beta, omega, lambda_=1, hbar=1):
+    numerator = np.sinh(beta * hbar * lambda_) - 1
+    denominator = np.cosh(beta * hbar * omega) + np.cosh(beta * hbar * lambda_ / 2)
+    concurrence_value = numerator / denominator
+    # Limitar a concorrência entre 0 e 1
+    return np.clip(concurrence_value, 0, 1)
+
+# Calcular beta a partir de T
+beta = 1 / T
+
+# Criar uma grade de valores para omega e T
+beta_grid, omega_grid = np.meshgrid(beta, omega_values)
+
+# Calcular os valores de concorrência com lambda fixo em 1
+concurrence_values = concurrence(beta_grid, omega_grid)
+
+# Plotar o gráfico de contornos
+plt.figure(figsize=(8, 6))
+cp = plt.contourf(T, omega_values, concurrence_values, levels=100, cmap="viridis")
+plt.colorbar(cp, label="Concorrência")
+plt.xlabel("Temperatura $T$")
+plt.ylabel("Frequência $\\omega$")
+plt.title("Concorrência $C(\\hat{\\rho})$ em função de $T$ e $\\omega$, com $\\lambda = 1$")
+plt.show()
